@@ -27,8 +27,18 @@ async function run () {
             const query = {};
             const cursor = productCollection.find(query);
             const products = await cursor.toArray();
+            //const products = await cursor.limit(10).toArray();
             res.send(products);
         });
+
+        //count Data (see total number of data) FOR Pagination
+        app.get('/productCount', async(req,res)=>{
+            const query = {};
+            const cursor = productCollection.find(query);
+            const count = await cursor.count();
+            res.send({count}); //sent to as a object
+        });
+
 
     }
     finally{
