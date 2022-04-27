@@ -1,8 +1,7 @@
 //const packageName = require('packageName');
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const { ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const app = express();
 require('dotenv').config();
@@ -20,7 +19,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run () {
     try{
         await client.connect(); //client.connect 
-        const productCollection = client.db("Ema-John").collection("product");   //perform actions on the collection object
+        const productCollection = client.db("Ema-John").collection("product");   
+        //perform actions on the collection object
 
         //inital data get/count/page/query
         app.get('/product', async (req,res) =>{
@@ -49,19 +49,22 @@ async function run () {
             res.send({count}); //sent to as a object
         });
 
-
+        // USE POST TO GET PRODUCTS BY ID's
+        app.post('/productByKeys', async(req, res) =>{
+            const keys = req.body;
+            const ids = keys.map(id => ObjectId(id));
+            const query = {_id: {$in: ids}}
+            const cursor = productCollection.find(query);
+            const products = await cursor.toArray();
+            console.log(keys);
+            res.send(products);
+        })
     }
-    finally{
-
-    }
-      
-
-
-
+    finally{}
+    
 }
 // call the async finction
 run().catch(console.dir);
-console.log('wow! mongodb is conncted to server')    
 
 
 //log 
